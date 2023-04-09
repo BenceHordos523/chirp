@@ -1,12 +1,15 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import Link from "next/link";
-import { SignIn } from "@clerk/nextjs";
 import { SignInButton } from "@clerk/clerk-react";
-import { SignOutButton } from "@clerk/clerk-react";
 import { useUser } from "@clerk/clerk-react";
+import { api } from "~/utils/api";
+import type { RouterOutputs } from "~/utils/api";
 
-import { RouterOutputs, api } from "~/utils/api";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import Image from "next/image";
+
+dayjs.extend(relativeTime);
 
 const CreatePostWizard = () => {
   const { user } = useUser();
@@ -17,10 +20,12 @@ const CreatePostWizard = () => {
 
   return (
     <div className="flex w-full gap-3 ">
-      <img
+      <Image
         src={user.profileImageUrl}
         alt="Profile image"
         className="h-14 w-14 rounded-full"
+        height={56}
+        width={56}
       />
       <input
         type="text"
@@ -37,14 +42,19 @@ const PostView = (props: PostWithUser) => {
   const { post, author } = props;
   return (
     <div key={post.id} className="flex gap-3 border-b border-slate-400 p-4">
-      <img
+      <Image
         src={author.profilePicture}
         alt="Profile picture"
         className="h-14 w-14 rounded-full"
+        height={56}
+        width={56}
       />
       <div className="flex flex-col">
-        <div className="flex text-slate-300">
+        <div className="flex gap-1 text-slate-300">
           <span>{`@${author.name}`}</span>
+          <span className="font-thin">{` · ${dayjs(
+            post.createdAt
+          ).fromNow()}`}</span>
         </div>
         <div>
           <span>{post.content}</span>
